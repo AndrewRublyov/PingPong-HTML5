@@ -11,6 +11,8 @@ body, html {
     width: 800px;
     height: 600px;
     border: 7px solid #FFF;
+    transition: 1s all;
+    outline: none;
 }
 
 @font-face {

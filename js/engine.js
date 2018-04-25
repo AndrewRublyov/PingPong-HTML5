@@ -78,16 +78,6 @@ var engine = {
 
   // Starts infinity gameloop
   startGameLoop: function(ctx) {
-    let startGameLoopInternal = function() {
-      let currentTime = getTime();
-      engine.gameLoop.dt = currentTime - engine.gameLoop.lastTime;
-      engine.gameLoop.lastTime = currentTime;
-
-      engine.gameLoop.update();
-
-      engine.gameLoop.draw();
-    };
-
     engine.ctx = ctx;
 
     // Enable input for canvas
@@ -103,8 +93,22 @@ var engine = {
     engine.ctx.canvas.height = engine.ctx.canvas.clientHeight * PIXEL_RATIO;
     engine.ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
 
+    setInterval(engine.gameLoopInternal, 0)
+  },
+
+  gameLoopInternal: function() {
+    let currentTime = getTime();
+    engine.gameLoop.dt = currentTime - engine.gameLoop.lastTime;
+    engine.gameLoop.lastTime = currentTime;
+
+    engine.gameLoop.update();
+
+    engine.gameLoop.draw();
+  },
+
+  setScene: function(scene) {
+    engine.scene = scene;
     engine.gameLoop.load();
-    setInterval(startGameLoopInternal, 0)
   },
 
   // Fabrics
