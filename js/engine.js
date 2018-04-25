@@ -30,7 +30,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].load();
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].load();
       }
     },
 
@@ -40,7 +40,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].update();
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].update();
       }
     },
 
@@ -52,7 +52,7 @@ var engine = {
       engine.ctx.clearRect(0, 0, engine.ctx.canvas.width, engine.ctx.canvas.height);
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].draw();
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].draw();
       }
     },
 
@@ -64,7 +64,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].keyDown(keyCode);
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].keyDown(keyCode);
       }
     },
 
@@ -76,7 +76,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].keyDown(keyCode);
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].keyDown(keyCode);
       }
     },
 
@@ -87,7 +87,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].keyPress(keyCode);
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].keyPress(keyCode);
       }
     },
 
@@ -97,7 +97,7 @@ var engine = {
       }
 
       for (let objectId in engine.scene.objects) {
-        engine.scene.objects[objectId].mouseDown(button, posX, posY);
+        if (engine.scene.objects[objectId]) engine.scene.objects[objectId].mouseDown(button, posX, posY);
       }
     },
   },
