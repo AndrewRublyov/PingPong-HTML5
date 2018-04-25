@@ -17,7 +17,8 @@ var engine = {
   scene: {},
   // Context2D
   ctx: null,
-
+  // Pressed keys
+  keys: {},
   // Game loop-specific data and logic
   gameLoop: {
     dt: 0,
@@ -56,12 +57,37 @@ var engine = {
     },
 
     keyDown: function(keyCode) {
+      engine.keys[keyCode] = true;
+
       if (!engine.scene) {
         throw "Scene is not set";
       }
 
       for (let objectId in engine.scene.objects) {
         engine.scene.objects[objectId].keyDown(keyCode);
+      }
+    },
+
+    keyUp: function(keyCode) {
+      engine.keys[keyCode] = false;
+
+      if (!engine.scene) {
+        throw "Scene is not set";
+      }
+
+      for (let objectId in engine.scene.objects) {
+        engine.scene.objects[objectId].keyDown(keyCode);
+      }
+    },
+
+
+    keyPress: function(keyCode) {
+      if (!engine.scene) {
+        throw "Scene is not set";
+      }
+
+      for (let objectId in engine.scene.objects) {
+        engine.scene.objects[objectId].keyPress(keyCode);
       }
     },
 
@@ -86,6 +112,8 @@ var engine = {
 
     // Event listeners
     engine.ctx.canvas.addEventListener("keydown", function(event) { engine.gameLoop.keyDown(event.keyCode); }, false);
+    engine.ctx.canvas.addEventListener("keyup", function(event) { engine.gameLoop.keyUp(event.keyCode); }, false);
+    engine.ctx.canvas.addEventListener("keypress", function(event) { engine.gameLoop.keyPress(event.keyCode); }, false);
     engine.ctx.canvas.addEventListener("mousedown", function(event) { engine.gameLoop.mouseDown(event.button, event.clientX, event.clientY); }, false);
 
     // Canvas size
@@ -93,12 +121,12 @@ var engine = {
     engine.ctx.canvas.height = engine.ctx.canvas.clientHeight * PIXEL_RATIO;
     engine.ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
 
-    setInterval(engine.gameLoopInternal, 0)
+    engine.gameLoop.interval = setInterval(engine.gameLoopInternal, 0)
   },
 
   gameLoopInternal: function() {
     let currentTime = getTime();
-    engine.gameLoop.dt = currentTime - engine.gameLoop.lastTime;
+    engine.gameLoop.dt = (currentTime - engine.gameLoop.lastTime) / 100;
     engine.gameLoop.lastTime = currentTime;
 
     engine.gameLoop.update();
@@ -109,6 +137,15 @@ var engine = {
   setScene: function(scene) {
     engine.scene = scene;
     engine.gameLoop.load();
+
+    if (engine.gameLoop.interval) {
+      clearInterval(engine.gameLoop.interval);
+      engine.gameLoop.interval = setInterval(engine.gameLoopInternal, 0)
+    }
+  },
+
+  isKeyDown: function(keyCode) {
+    return engine.keys[keyCode];
   },
 
   // Fabrics
@@ -131,6 +168,8 @@ var engine = {
       update: function() {},
       draw: function() {},
       keyDown: function() {},
+      keyUp: function() {},
+      keyPress: function() {},
       mouseDown: function() {},
     }
   },
