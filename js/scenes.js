@@ -116,7 +116,6 @@ function newGameScene() {
   function resetState() {
     isGameStarted = false;
 
-    player2.x = CANVAS_WIDTH - BOARD_WIDTH - 25;
     player1.y = player2.y= (CANVAS_HEIGHT - BOARD_HEIGHT) / 2;
 
     bounce.x = (CANVAS_WIDTH - BOUNCE_SIZE) / 2;
