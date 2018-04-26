@@ -58,10 +58,10 @@ function newGameScene() {
   const CANVAS_HEIGHT = parseInt(canvas.style.height);
 
   const BORDER_RECTS = {
-    top: {x: 0, y: 0, w: CANVAS_WIDTH, h: 1},
-    bottom: {x: 0, y: CANVAS_HEIGHT, w: CANVAS_WIDTH, h: 1},
-    left: {x: 0, y: 0, w: 1, h: CANVAS_HEIGHT},
-    right: {x: CANVAS_WIDTH, y: 0, w: 1, h: CANVAS_HEIGHT},
+    top: {x: 0, y: -200, w: CANVAS_WIDTH, h: 200},
+    bottom: {x: 0, y: CANVAS_HEIGHT - 1, w: CANVAS_WIDTH, h: 200},
+    left: {x: -200, y: 0, w: 200, h: CANVAS_HEIGHT},
+    right: {x: CANVAS_WIDTH - 1, y: 0, w: 200, h: CANVAS_HEIGHT},
   };
 
   let gameManager = engine.newObject();
@@ -137,6 +137,29 @@ function newGameScene() {
       rect1.h + rect1.y > rect2.y;
   }
 
+  function resolveCollision(rect1, rect2) {
+    // rect1 colliding left to rect2
+    if (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w >= rect2.x + rect2.w) {
+      console.log("Right" + (rect2.x + rect2.w - rect1.x));
+      rect1.x += rect2.x + rect2.w - rect1.x;
+    }
+    // rect1 colliding right to rect2
+    else if (rect1.x + rect1.w >= rect2.x && rect1.x < rect2.x) {
+      console.log("Left" + (rect1.x + rect1.w - rect2.x));
+      rect1.x -= rect1.x + rect1.w - rect2.x;
+    }
+    // rect1 colliding top to rect2
+    else if (rect1.y < rect2.y + rect2.h && rect1.y + rect1.h >= rect2.y + rect2.h) {
+      console.log("Top" + (rect2.y + rect2.h - rect1.y));
+      rect1.y += rect2.y + rect2.h - rect1.y;
+    }
+    // rect1 colliding bottom to rect2
+    else if (rect1.y + rect1.h >= rect2.y && rect1.y < rect2.y) {
+      console.log("Bottom" + (rect1.y + rect1.h - rect2.y));
+      rect1.y -= rect1.y + rect1.h - rect2.y;
+    }
+  }
+
   gameManager.load = function() {
     colorBounds();
 
@@ -188,21 +211,29 @@ function newGameScene() {
   bounce.update = function() {
     if (!isGameStarted) return;
 
-    if (isColliding(bounce, BORDER_RECTS.top)
-      || isColliding(bounce, BORDER_RECTS.bottom))
-    {
+    if (isColliding(bounce, BORDER_RECTS.top)) {
+      resolveCollision(bounce, BORDER_RECTS.top);
       bounce.direction.y = bounce.direction.y === -1 ? 1 : -1;
     }
-    else if (isColliding(bounce, player1)
-    || isColliding(bounce, player2))
+    else if (isColliding(bounce, BORDER_RECTS.bottom)) {
+      resolveCollision(bounce, BORDER_RECTS.bottom);
+      bounce.direction.y = bounce.direction.y === -1 ? 1 : -1;
+    }
+    else if (isColliding(bounce, player1))
     {
+      resolveCollision(bounce, player1);
+      bounce.direction.x = bounce.direction.x === -1 ? 1 : -1;
+    }
+    else if (isColliding(bounce, player2))
+    {
+      resolveCollision(bounce, player2);
       bounce.direction.x = bounce.direction.x === -1 ? 1 : -1;
     }
     else if (isColliding(bounce, BORDER_RECTS.left))
     {
-      gameData.scores.player1++;
+      gameData.scores.player2++;
 
-      if (gameData.scores.player1 === 3) {
+      if (gameData.scores.player2 === 3) {
         engine.setScene(newPressEnterScene());
       } else {
         resetState();
@@ -210,9 +241,9 @@ function newGameScene() {
     }
     else if (isColliding(bounce, BORDER_RECTS.right))
     {
-      gameData.scores.player2++;
+      gameData.scores.player1++;
 
-      if (gameData.scores.player2 === 3) {
+      if (gameData.scores.player1 === 3) {
         uncolorBounds();
         engine.setScene(newPressEnterScene());
       } else {
